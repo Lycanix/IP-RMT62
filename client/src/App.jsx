@@ -7,7 +7,7 @@ function App() {
 		<>
 			<BrowserRouter>
 				<Routes>
-					<Route path="/" element={<App />} />
+					<Route path="/" element={<h1>Undeploy home</h1>} />
 					<Route path="/login" element={<LoginPage />} />
 					<Route path="/register" element={<RegisterPage />} />
 				</Routes>

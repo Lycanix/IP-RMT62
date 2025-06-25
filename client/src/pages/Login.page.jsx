@@ -5,18 +5,36 @@ export default function LoginPage() {
 	const [password, setPassword] = useState("");
 
 	useEffect(() => {
-		function handleCredentialResponse(response) {
+		const handleCredentialResponse = (response) => {
 			console.log("Encoded JWT ID token: " + response.credential);
-		}
-		google.accounts.id.initialize({
-			client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-			callback: handleCredentialResponse,
-		});
-		google.accounts.id.renderButton(
-			document.getElementById("buttonDiv"),
-			{ theme: "outline", size: "large" } // customization attributes
-		);
-		google.accounts.id.prompt(); // also display the One Tap dialog
+		};
+
+		// Fungsi untuk inisialisasi Google Sign-In setelah script siap
+		const initializeGoogleSignIn = () => {
+			if (
+				window.google &&
+				window.google.accounts &&
+				window.google.accounts.id
+			) {
+				window.google.accounts.id.initialize({
+					client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+					callback: handleCredentialResponse,
+				});
+
+				window.google.accounts.id.renderButton(
+					document.getElementById("buttonDiv"),
+					{ theme: "outline", size: "large" }
+				);
+
+				// Optional: tampilkan One Tap dialog
+				// window.google.accounts.id.prompt();
+			} else {
+				// Tunggu sampai script selesai dimuat
+				setTimeout(initializeGoogleSignIn, 100);
+			}
+		};
+
+		initializeGoogleSignIn();
 	}, []);
 
 	return (
