@@ -34,6 +34,11 @@ export default function Navbar() {
 									👤 User
 								</Link>
 							</li>
+							<li className="nav-item">
+								<Link className="nav-link" to="/market">
+									🛒 Market
+								</Link>
+							</li>
 						</>
 					)}
 				</ul>

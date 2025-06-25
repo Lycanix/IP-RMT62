@@ -60,6 +60,14 @@ export const deleteDigimon = createAsyncThunk(
 	}
 );
 
+export const buyDigimon = createAsyncThunk("myDigimon/buy", async (digimon) => {
+	const token = localStorage.getItem("access_token");
+	const { data } = await axios.post(`${BASE_URL}/market/buy`, digimon, {
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	return data;
+});
+
 // === Slice ===
 
 const myDigimonSlice = createSlice({
@@ -103,6 +111,9 @@ const myDigimonSlice = createSlice({
 			.addCase(fetchMyDigimons.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message;
+			})
+			.addCase(buyDigimon.fulfilled, (state, action) => {
+				state.digimons.push(action.payload);
 			})
 
 			// === FEED ===

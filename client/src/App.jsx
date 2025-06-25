@@ -4,6 +4,7 @@ import HomePage from "./pages/Home.page";
 import RegisterPage from "./pages/Register.page";
 import ProfilePage from "./pages/Profile.page";
 import MyDigimonPage from "./pages/MyDigimon.page";
+import MarketPage from "./pages/Market.page";
 
 export default function App() {
 	const isAuthenticated = !!localStorage.getItem("access_token");
@@ -31,6 +32,12 @@ export default function App() {
 				path="/my-digimons"
 				element={
 					isAuthenticated ? <MyDigimonPage /> : <Navigate to="/login" replace />
+				}
+			/>
+			<Route
+				path="/market"
+				element={
+					isAuthenticated ? <MarketPage /> : <Navigate to="/login" replace />
 				}
 			/>
 			<Route path="*" element={<Navigate to="/" replace />} />
