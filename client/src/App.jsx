@@ -1,37 +1,38 @@
-// src/App.jsx
 import { Routes, Route, Navigate } from "react-router";
 import LoginPage from "./pages/Login.page";
 import HomePage from "./pages/Home.page";
 import RegisterPage from "./pages/Register.page";
+import ProfilePage from "./pages/Profile.page";
+import MyDigimonPage from "./pages/MyDigimon.page";
 
 export default function App() {
 	const isAuthenticated = !!localStorage.getItem("access_token");
 
 	return (
 		<Routes>
-			{/* Halaman Home */}
 			<Route
 				path="/"
 				element={
 					isAuthenticated ? <HomePage /> : <Navigate to="/login" replace />
 				}
 			/>
-
-			{/* Login Page */}
 			<Route
 				path="/login"
 				element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
 			/>
-
-			{/* Register Page */}
+			<Route path="/register" element={<RegisterPage />} />
 			<Route
-				path="/register"
+				path="/profile"
 				element={
-					isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
+					isAuthenticated ? <ProfilePage /> : <Navigate to="/login" replace />
 				}
 			/>
-
-			{/* Catch all */}
+			<Route
+				path="/my-digimons"
+				element={
+					isAuthenticated ? <MyDigimonPage /> : <Navigate to="/login" replace />
+				}
+			/>
 			<Route path="*" element={<Navigate to="/" replace />} />
 		</Routes>
 	);

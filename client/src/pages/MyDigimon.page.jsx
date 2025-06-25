@@ -1,5 +1,6 @@
-import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Navbar from "../components/Navbar";
 import {
 	fetchMyDigimons,
 	feedDigimon,
@@ -7,14 +8,15 @@ import {
 	playDigimon,
 	deleteDigimon,
 } from "../store/myDigimonSlice";
-import Navbar from "../components/Navbar";
+import { mapLevelToAttribute } from "../utils/mapLevelToAttribute";
 
-export default function HomePage() {
+
+export default function MyDigimonPage() {
 	const dispatch = useDispatch();
 	const { digimons, loading, error } = useSelector((state) => state.myDigimon);
 
 	useEffect(() => {
-		dispatch(fetchMyDigimons());
+		// dispatch(fetchMyDigimons()); ----> untuk ke server
 	}, [dispatch]);
 
 	if (loading) return <p>Loading digimons...</p>;
@@ -24,11 +26,11 @@ export default function HomePage() {
 		<>
 			<Navbar />
 			<div className="container mt-4">
-				<h1>My Digimons</h1>
+				<h2>🧬 My Digimons</h2>
 				<div className="row">
 					{digimons.map((digimon) => (
 						<div className="col-md-4" key={digimon.id}>
-							<div className="card mb-3">
+							<div className="card mb-3 shadow">
 								<img
 									src={digimon.image}
 									className="card-img-top"
@@ -37,11 +39,10 @@ export default function HomePage() {
 								<div className="card-body">
 									<h5 className="card-title">{digimon.name}</h5>
 									<p className="card-text">
-										Power: {digimon.power}
-										<br />
-										Hunger: {digimon.hunger}
-										<br />
-										Happiness: {digimon.happiness}
+										Power: {digimon.power} <br />
+										Hunger: {digimon.hunger} <br />
+										Happiness: {digimon.happiness} <br />
+										Attribute: {mapLevelToAttribute(digimon.level)}
 									</p>
 									<div className="d-flex flex-wrap gap-2">
 										<button
@@ -54,7 +55,7 @@ export default function HomePage() {
 											className="btn btn-warning btn-sm"
 											onClick={() => dispatch(trainDigimon(digimon.id))}
 										>
-											🍊 Train
+											🥊 Train
 										</button>
 										<button
 											className="btn btn-info btn-sm"
@@ -73,6 +74,9 @@ export default function HomePage() {
 							</div>
 						</div>
 					))}
+					{digimons.length === 0 && (
+						<p className="text-muted">No Digimons found.</p>
+					)}
 				</div>
 			</div>
 		</>
