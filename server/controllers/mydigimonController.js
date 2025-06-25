@@ -5,7 +5,7 @@ module.exports = {
 	async getAll(req, res) {
 		try {
 			const digimons = await MyDigimon.findAll({
-				where: { userId: 1 }, // sementara hardcode
+				where: { userId: req.user.id }, // sementara hardcode (sudah fix)
 				order: [["id", "ASC"]],
 			});
 			res.json(digimons);
