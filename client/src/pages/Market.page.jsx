@@ -1,36 +1,29 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMarketDigimons } from "../store/marketSlice";
 import { buyDigimon } from "../store/myDigimonSlice";
 import Navbar from "../components/Navbar";
 
 export default function MarketPage() {
-	const [digimons, setDigimons] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
 	const dispatch = useDispatch();
+	const { digimons, loading, error } = useSelector((state) => state.market);
 
 	useEffect(() => {
-		const fetchMarket = async () => {
-			try {
-				const { data } = await axios.get("http://localhost:3000/market");
-				setDigimons(data);
-			} catch (err) {
-				setError("Failed to fetch market data");
-			} finally {
-				setLoading(false);
-			}
-		};
-		fetchMarket();
-	}, []);
+		dispatch(fetchMarketDigimons());
+	}, [dispatch]);
 
 	const handleBuy = (digimon) => {
-		dispatch(buyDigimon(digimon));
-		alert(`${digimon.name} has been bought!`);
+		dispatch(
+			buyDigimon({
+				name: digimon.name,
+				image: digimon.img,
+				level: digimon.level,
+			})
+		);
 	};
 
-	if (loading) return <p>Loading Market...</p>;
-	if (error) return <p>{error}</p>;
+	if (loading) return <p>Loading market...</p>;
+	if (error) return <p>Error loading Digimon: {error}</p>;
 
 	return (
 		<>
@@ -38,25 +31,22 @@ export default function MarketPage() {
 			<div className="container mt-4">
 				<h2>🛒 Digimon Market</h2>
 				<div className="row">
-					{digimons.map((digimon, index) => (
-						<div className="col-md-4" key={index}>
+					{digimons.map((digimon, i) => (
+						<div className="col-md-3" key={i}>
 							<div className="card mb-3 shadow">
 								<img
-									src={digimon.image}
-									className="card-img-top"
+									src={digimon.img}
 									alt={digimon.name}
+									className="card-img-top"
 								/>
 								<div className="card-body">
-									<h5 className="card-title">{digimon.name}</h5>
-									<p className="card-text">
-										Level: {digimon.level} <br />
-										Attribute: {digimon.attribute}
-									</p>
+									<h5>{digimon.name}</h5>
+									<p>Level: {digimon.level}</p>
 									<button
-										className="btn btn-primary"
+										className="btn btn-primary btn-sm"
 										onClick={() => handleBuy(digimon)}
 									>
-										Buy 🛒
+										Buy
 									</button>
 								</div>
 							</div>

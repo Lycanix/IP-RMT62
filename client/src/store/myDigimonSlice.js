@@ -73,26 +73,7 @@ export const buyDigimon = createAsyncThunk("myDigimon/buy", async (digimon) => {
 const myDigimonSlice = createSlice({
 	name: "myDigimon",
 	initialState: {
-		digimons: [
-			{
-				id: 1,
-				name: "Agumon",
-				image: "https://digimon.shadowsmith.com/img/agumon.jpg",
-				level: "Rookie",
-				power: 3,
-				hunger: 2,
-				happiness: 4,
-			},
-			{
-				id: 2,
-				name: "Meramon",
-				image: "https://digimon.shadowsmith.com/img/meramon.jpg",
-				level: "Champion",
-				power: 2,
-				hunger: 3,
-				happiness: 5,
-			},
-		],
+		digimons: [],
 		loading: false,
 		error: null,
 	},
