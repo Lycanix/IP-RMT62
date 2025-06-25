@@ -1,79 +1,53 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router";
 
 export default function LoginPage() {
 	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	const [idToken, setIdToken] = useState("");
+	const navigate = useNavigate();
 
-	useEffect(() => {
-		const handleCredentialResponse = (response) => {
-			console.log("Encoded JWT ID token: " + response.credential);
-		};
+	const handleLogin = async (e) => {
+		e.preventDefault();
 
-		// Fungsi untuk inisialisasi Google Sign-In setelah script siap
-		const initializeGoogleSignIn = () => {
-			if (
-				window.google &&
-				window.google.accounts &&
-				window.google.accounts.id
-			) {
-				window.google.accounts.id.initialize({
-					client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-					callback: handleCredentialResponse,
-				});
+		try {
+			const { data } = await axios.post("http://localhost:3000/google-login", {
+				idToken,
+			});
 
-				window.google.accounts.id.renderButton(
-					document.getElementById("buttonDiv"),
-					{ theme: "outline", size: "large" }
-				);
-
-				// Optional: tampilkan One Tap dialog
-				// window.google.accounts.id.prompt();
-			} else {
-				// Tunggu sampai script selesai dimuat
-				setTimeout(initializeGoogleSignIn, 100);
-			}
-		};
-
-		initializeGoogleSignIn();
-	}, []);
+			localStorage.setItem("access_token", data.access_token);
+			navigate("/");
+		} catch (err) {
+			console.error("Login failed:", err.response?.data || err.message);
+		}
+	};
 
 	return (
-		<section>
-			<form className="w-50 mt-5 p-5 mx-auto border border-3 rounded-4">
-				<h1>Login</h1>
+		<div className="container mt-5">
+			<h2>Login</h2>
+			<form onSubmit={handleLogin}>
 				<div className="mb-3">
-					<label htmlFor="exampleInputEmail1" className="form-label">
-						Email address
-					</label>
+					<label className="form-label">Email (dummy)</label>
 					<input
 						type="email"
 						className="form-control"
-						id="exampleInputEmail1"
-						aria-describedby="emailHelp"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 					/>
 				</div>
-
 				<div className="mb-3">
-					<label htmlFor="exampleInputPassword1" className="form-label">
-						Password
-					</label>
+					<label className="form-label">Google ID Token</label>
 					<input
-						type="password"
+						type="text"
 						className="form-control"
-						id="exampleInputPassword1"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
+						value={idToken}
+						onChange={(e) => setIdToken(e.target.value)}
 					/>
 				</div>
-
 				<button type="submit" className="btn btn-primary">
-					Login
+					Login with Google
 				</button>
 			</form>
-
-			<div id="buttonDiv"></div>
-		</section>
+		</div>
 	);
 }
