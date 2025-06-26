@@ -12,6 +12,7 @@ exports.getMarketDigimons = async (req, res, next) => {
 			name: d.name,
 			img: d.img,
 			level: d.level,
+			attribute: d.attribute || mapLevelToAttribute(d.level),
 		}));
 		res.json(digimons);
 	} catch (err) {
