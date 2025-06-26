@@ -38,9 +38,9 @@ module.exports = {
 				img,
 				level,
 				attribute,
-				hunger: 0,
-				power: 0,
-				happiness: 0,
+				hunger: 50,
+				power: 50,
+				happiness: 50,
 			});
 
 			res.status(201).json(newDigimon);
