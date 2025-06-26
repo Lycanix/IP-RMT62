@@ -1,15 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketDigimons } from "../store/marketSlice";
 import { buyDigimon } from "../store/myDigimonSlice";
 
 export default function MarketPage() {
 	const dispatch = useDispatch();
-	const { digimons, loading, error } = useSelector((state) => state.market);
+	const { digimons, loading, error, hasMore } = useSelector(
+		(state) => state.market
+	);
+	const [page, setPage] = useState(1);
 
 	useEffect(() => {
-		dispatch(fetchMarketDigimons());
-	}, [dispatch]);
+		dispatch(fetchMarketDigimons(page));
+	}, [dispatch, page]);
 
 	const handleBuy = (digimon) => {
 		dispatch(
@@ -31,7 +34,7 @@ export default function MarketPage() {
 		alert(data.recommendation);
 	};
 
-	if (loading) return <p>Loading market...</p>;
+	if (loading && page === 1) return <p>Loading market...</p>;
 	if (error) return <p>Error loading Digimon: {error}</p>;
 
 	return (
@@ -67,6 +70,18 @@ export default function MarketPage() {
 					</div>
 				))}
 			</div>
+			{hasMore && (
+				<div className="text-center my-3">
+					<button
+						className="btn btn-outline-primary"
+						onClick={() => setPage((prev) => prev + 1)}
+						disabled={loading}
+					>
+						{loading ? "Loading..." : "Load More"}
+					</button>
+				</div>
+			)}
+			{!hasMore && <p className="text-center">No more Digimon.</p>}
 		</div>
 	);
 }
