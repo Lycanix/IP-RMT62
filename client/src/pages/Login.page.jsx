@@ -1,9 +1,8 @@
-// filepath: [Login.page.jsx](http://_vscodecontentref_/2)
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function LoginPage() {
+export default function LoginPage({ onLogin }) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState(null);
@@ -20,7 +19,8 @@ export default function LoginPage() {
 				}
 			);
 			localStorage.setItem("access_token", data.token);
-			navigate("/mydigimons");
+			if (onLogin) onLogin();
+			navigate("/");
 		} catch (err) {
 			setError(
 				err.response?.data?.error ||
@@ -40,7 +40,8 @@ export default function LoginPage() {
 					}
 				);
 				localStorage.setItem("access_token", data.token);
-				navigate("/mydigimons");
+				if (onLogin) onLogin();
+				navigate("/");
 			} catch (err) {
 				setError(
 					"Google Login Failed: " + (err.response?.data?.error || err.message)
@@ -62,8 +63,9 @@ export default function LoginPage() {
 				}
 			);
 			window.google.accounts.id.prompt();
+			window._gsiInitialized = true;
 		}
-	}, [navigate]);
+	}, [navigate, onLogin]);
 
 	return (
 		<div className="container mt-5">

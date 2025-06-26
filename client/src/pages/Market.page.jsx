@@ -17,6 +17,7 @@ export default function MarketPage() {
 				digimonName: digimon.name,
 				img: digimon.img,
 				level: digimon.level,
+				attribute: digimon.attribute,
 			})
 		);
 	};
@@ -50,7 +51,11 @@ export default function MarketPage() {
 							/>
 							<div className="card-body">
 								<h5>{digimon.name}</h5>
-								<p>Level: {digimon.level}</p>
+								<p>
+									Level: {digimon.level}
+									<br />
+									Attribute: {digimon.attribute || "-"}
+								</p>
 								<button
 									className="btn btn-primary btn-sm"
 									onClick={() => handleBuy(digimon)}

@@ -20,9 +20,11 @@ export default function App() {
 		return () => window.removeEventListener("storage", handleStorage);
 	}, []);
 
+	const handleLogout = () => setIsAuthenticated(false);
+
 	return (
 		<>
-			{isAuthenticated && <Navbar />}
+			{isAuthenticated && <Navbar onLogout={handleLogout} />}
 			<Routes>
 				<Route
 					path="/"
@@ -45,7 +47,11 @@ export default function App() {
 				<Route
 					path="/login"
 					element={
-						isAuthenticated ? <Navigate to="/mydigimons" /> : <LoginPage />
+						isAuthenticated ? (
+							<Navigate to="/" />
+						) : (
+							<LoginPage onLogin={() => setIsAuthenticated(true)} />
+						)
 					}
 				/>
 				<Route

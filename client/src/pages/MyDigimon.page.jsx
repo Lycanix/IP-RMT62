@@ -1,3 +1,6 @@
+import { useNavigate } from "react-router-dom";
+import { setLastInteracted } from "../store/myDigimonSlice";
+import { store } from "../store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -10,7 +13,19 @@ import {
 
 export default function MyDigimonPage() {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const { digimons, loading, error } = useSelector((state) => state.myDigimon);
+
+	const handleAction = async (action, id) => {
+		await dispatch(action(id));
+		const updatedDigimon = store
+			.getState()
+			.myDigimon.digimons.find((d) => d.id === id);
+		dispatch(
+			setLastInteracted({ digimon: updatedDigimon, action: action.name })
+		);
+		navigate("/");
+	};
 
 	useEffect(() => {
 		dispatch(fetchMyDigimons());
@@ -43,19 +58,19 @@ export default function MyDigimonPage() {
 									<div className="d-flex flex-wrap gap-2">
 										<button
 											className="btn btn-success btn-sm"
-											onClick={() => dispatch(feedDigimon(digimon.id))}
+											onClick={() => handleAction(feedDigimon, digimon.id)}
 										>
 											🍽 Feed
 										</button>
 										<button
 											className="btn btn-warning btn-sm"
-											onClick={() => dispatch(trainDigimon(digimon.id))}
+											onClick={() => handleAction(trainDigimon, digimon.id)}
 										>
 											🥊 Train
 										</button>
 										<button
 											className="btn btn-info btn-sm"
-											onClick={() => dispatch(playDigimon(digimon.id))}
+											onClick={() => handleAction(playDigimon, digimon.id)}
 										>
 											🎮 Play
 										</button>

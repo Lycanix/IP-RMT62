@@ -76,8 +76,15 @@ const myDigimonSlice = createSlice({
 		digimons: [],
 		loading: false,
 		error: null,
+		lastInteracted: null,
+		lastAction: null,
 	},
-	reducers: {},
+	reducers: {
+		setLastInteracted(state, action) {
+			state.lastInteracted = action.payload.digimon;
+			state.lastAction = action.payload.action;
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			// === FETCH ===
@@ -125,4 +132,5 @@ const myDigimonSlice = createSlice({
 	},
 });
 
+export const { setLastInteracted } = myDigimonSlice.actions;
 export default myDigimonSlice.reducer;
