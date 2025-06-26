@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function LoginPage({ onLogin }) {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	const [email, setEmail] = useState("user01@email.com");
+	const [password, setPassword] = useState("admin123");
 	const [error, setError] = useState(null);
 	const navigate = useNavigate();
 
@@ -96,6 +96,9 @@ export default function LoginPage({ onLogin }) {
 					Login
 				</button>
 			</form>
+			<div>
+				Don't have an account yet? <Link to="/register">Register</Link>
+			</div>
 			<hr />
 			<div id="buttonDiv" className="my-3" />
 		</div>

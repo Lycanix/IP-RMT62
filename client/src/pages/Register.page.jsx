@@ -1,11 +1,12 @@
 // filepath: [Register.page.jsx](http://_vscodecontentref_/3)
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [name, setName] = useState("");
 	const [error, setError] = useState(null);
 
 	const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function RegisterPage() {
 			await axios.post("http://localhost:3000/google-login/register", {
 				email,
 				password,
+				name,
 			});
 			navigate("/login");
 		} catch (err) {
@@ -32,6 +34,16 @@ export default function RegisterPage() {
 			<h2>Register</h2>
 			<form onSubmit={handleSubmit}>
 				{error && <div className="alert alert-danger">{error}</div>}
+				<div className="mb-3">
+					<label className="form-label">Name</label>
+					<input
+						type="text"
+						className="form-control"
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						required
+					/>
+				</div>
 				<div className="mb-3">
 					<label className="form-label">Email</label>
 					<input
@@ -55,6 +67,9 @@ export default function RegisterPage() {
 				<button type="submit" className="btn btn-primary">
 					Register
 				</button>
+				<div>
+					Do you have an account? <Link to="/login">Login</Link>
+				</div>
 			</form>
 		</div>
 	);
