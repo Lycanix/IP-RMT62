@@ -1,46 +1,64 @@
-import { Routes, Route, Navigate } from "react-router";
-import LoginPage from "./pages/Login.page";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import HomePage from "./pages/Home.page";
+import LoginPage from "./pages/Login.page";
 import RegisterPage from "./pages/Register.page";
-import ProfilePage from "./pages/Profile.page";
 import MyDigimonPage from "./pages/MyDigimon.page";
 import MarketPage from "./pages/Market.page";
+import ProfilePage from "./pages/Profile.page";
+import Navbar from "./components/Navbar";
 
 export default function App() {
-	const isAuthenticated = !!localStorage.getItem("access_token");
+	const [isAuthenticated, setIsAuthenticated] = useState(
+		!!localStorage.getItem("access_token")
+	);
+
+	useEffect(() => {
+		const handleStorage = () =>
+			setIsAuthenticated(!!localStorage.getItem("access_token"));
+		window.addEventListener("storage", handleStorage);
+		return () => window.removeEventListener("storage", handleStorage);
+	}, []);
 
 	return (
-		<Routes>
-			<Route
-				path="/"
-				element={
-					isAuthenticated ? <HomePage /> : <Navigate to="/login" replace />
-				}
-			/>
-			<Route
-				path="/login"
-				element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
-			/>
-			<Route path="/register" element={<RegisterPage />} />
-			<Route
-				path="/profile"
-				element={
-					isAuthenticated ? <ProfilePage /> : <Navigate to="/login" replace />
-				}
-			/>
-			<Route
-				path="/my-digimons"
-				element={
-					isAuthenticated ? <MyDigimonPage /> : <Navigate to="/login" replace />
-				}
-			/>
-			<Route
-				path="/market"
-				element={
-					isAuthenticated ? <MarketPage /> : <Navigate to="/login" replace />
-				}
-			/>
-			<Route path="*" element={<Navigate to="/" replace />} />
-		</Routes>
+		<>
+			{isAuthenticated && <Navbar />}
+			<Routes>
+				<Route
+					path="/"
+					element={isAuthenticated ? <HomePage /> : <Navigate to="/login" />}
+				/>
+				<Route
+					path="/market"
+					element={isAuthenticated ? <MarketPage /> : <Navigate to="/login" />}
+				/>
+				<Route
+					path="/mydigimons"
+					element={
+						isAuthenticated ? <MyDigimonPage /> : <Navigate to="/login" />
+					}
+				/>
+				<Route
+					path="/profile"
+					element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />}
+				/>
+				<Route
+					path="/login"
+					element={
+						isAuthenticated ? <Navigate to="/mydigimons" /> : <LoginPage />
+					}
+				/>
+				<Route
+					path="/register"
+					element={
+						isAuthenticated ? <Navigate to="/mydigimons" /> : <RegisterPage />
+					}
+				/>
+				<Route
+					path="*"
+					element={<Navigate to={isAuthenticated ? "/mydigimons" : "/login"} />}
+				/>
+			</Routes>
+		</>
 	);
 }

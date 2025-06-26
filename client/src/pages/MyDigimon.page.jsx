@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Navbar from "../components/Navbar";
 import {
 	fetchMyDigimons,
 	feedDigimon,
@@ -8,15 +7,13 @@ import {
 	playDigimon,
 	deleteDigimon,
 } from "../store/myDigimonSlice";
-import { mapLevelToAttribute } from "../utils/mapLevelToAttribute";
-
 
 export default function MyDigimonPage() {
 	const dispatch = useDispatch();
 	const { digimons, loading, error } = useSelector((state) => state.myDigimon);
 
 	useEffect(() => {
-		// dispatch(fetchMyDigimons()); ----> untuk ke server
+		dispatch(fetchMyDigimons());
 	}, [dispatch]);
 
 	if (loading) return <p>Loading digimons...</p>;
@@ -24,7 +21,6 @@ export default function MyDigimonPage() {
 
 	return (
 		<>
-			<Navbar />
 			<div className="container mt-4">
 				<h2>🧬 My Digimons</h2>
 				<div className="row">
@@ -32,17 +28,17 @@ export default function MyDigimonPage() {
 						<div className="col-md-4" key={digimon.id}>
 							<div className="card mb-3 shadow">
 								<img
-									src={digimon.image}
+									src={digimon.img}
 									className="card-img-top"
-									alt={digimon.name}
+									alt={digimon.digimonName}
 								/>
 								<div className="card-body">
-									<h5 className="card-title">{digimon.name}</h5>
+									<h5 className="card-title">{digimon.digimonName}</h5>
 									<p className="card-text">
 										Power: {digimon.power} <br />
 										Hunger: {digimon.hunger} <br />
 										Happiness: {digimon.happiness} <br />
-										Attribute: {mapLevelToAttribute(digimon.level)}
+										Attribute: {digimon.attribute}
 									</p>
 									<div className="d-flex flex-wrap gap-2">
 										<button

@@ -7,7 +7,6 @@ import {
 	playDigimon,
 	deleteDigimon,
 } from "../store/myDigimonSlice";
-import Navbar from "../components/Navbar";
 
 export default function HomePage() {
 	const dispatch = useDispatch();
@@ -22,7 +21,6 @@ export default function HomePage() {
 
 	return (
 		<>
-			<Navbar />
 			<div className="container mt-4">
 				<h1>My Digimons</h1>
 				<div className="row">
@@ -30,18 +28,20 @@ export default function HomePage() {
 						<div className="col-md-4" key={digimon.id}>
 							<div className="card mb-3">
 								<img
-									src={digimon.image}
+									src={digimon.img}
 									className="card-img-top"
-									alt={digimon.name}
+									alt={digimon.digimonName}
 								/>
 								<div className="card-body">
-									<h5 className="card-title">{digimon.name}</h5>
+									<h5 className="card-title">{digimon.digimonName}</h5>
 									<p className="card-text">
 										Power: {digimon.power}
 										<br />
 										Hunger: {digimon.hunger}
 										<br />
 										Happiness: {digimon.happiness}
+										<br />
+										Attribute: {digimon.attribute}
 									</p>
 									<div className="d-flex flex-wrap gap-2">
 										<button
@@ -54,7 +54,7 @@ export default function HomePage() {
 											className="btn btn-warning btn-sm"
 											onClick={() => dispatch(trainDigimon(digimon.id))}
 										>
-											🍊 Train
+											🥊 Train
 										</button>
 										<button
 											className="btn btn-info btn-sm"
@@ -73,6 +73,9 @@ export default function HomePage() {
 							</div>
 						</div>
 					))}
+					{digimons.length === 0 && (
+						<p className="text-muted">No Digimons found.</p>
+					)}
 				</div>
 			</div>
 		</>

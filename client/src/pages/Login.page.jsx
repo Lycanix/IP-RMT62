@@ -1,68 +1,75 @@
+// filepath: [Login.page.jsx](http://_vscodecontentref_/2)
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function LoginPage() {
-	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [error, setError] = useState(null);
+	const navigate = useNavigate();
 
-	// === Login biasa (email + password) ===
 	const handleLogin = async (e) => {
 		e.preventDefault();
 		try {
-			const { data } = await axios.post("http://localhost:3000/login", {
-				email,
-				password,
-			});
-			localStorage.setItem("access_token", data.access_token);
-			navigate("/");
+			const { data } = await axios.post(
+				"http://localhost:3000/google-login/login",
+				{
+					email,
+					password,
+				}
+			);
+			localStorage.setItem("access_token", data.token);
+			navigate("/mydigimons");
 		} catch (err) {
-			console.error(err.response?.data || err.message);
+			setError(
+				err.response?.data?.error ||
+					err.response?.data?.message ||
+					"Login failed"
+			);
 		}
 	};
 
-	// === Login Google otomatis ===
 	useEffect(() => {
-		/* global google */
 		window.handleCredentialResponse = async (response) => {
 			try {
 				const { data } = await axios.post(
-					"http://localhost:3000/google-login",
+					"http://localhost:3000/google-login/google",
 					{
 						idToken: response.credential,
 					}
 				);
-				localStorage.setItem("access_token", data.access_token);
-				navigate("/");
+				localStorage.setItem("access_token", data.token);
+				navigate("/mydigimons");
 			} catch (err) {
-				console.error(
-					"Google Login Failed:",
-					err.response?.data || err.message
+				setError(
+					"Google Login Failed: " + (err.response?.data?.error || err.message)
 				);
 			}
 		};
 
 		const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 		if (window.google && clientId) {
-			google.accounts.id.initialize({
+			window.google.accounts.id.initialize({
 				client_id: clientId,
-				callback: handleCredentialResponse,
+				callback: window.handleCredentialResponse,
 			});
-			google.accounts.id.renderButton(document.getElementById("buttonDiv"), {
-				theme: "outline",
-				size: "large",
-			});
-			google.accounts.id.prompt();
+			window.google.accounts.id.renderButton(
+				document.getElementById("buttonDiv"),
+				{
+					theme: "outline",
+					size: "large",
+				}
+			);
+			window.google.accounts.id.prompt();
 		}
-	}, []);
+	}, [navigate]);
 
 	return (
 		<div className="container mt-5">
 			<h2>Login</h2>
-
-			{/* Login Manual */}
 			<form onSubmit={handleLogin}>
+				{error && <div className="alert alert-danger">{error}</div>}
 				<div className="mb-3">
 					<label className="form-label">Email</label>
 					<input
@@ -87,10 +94,7 @@ export default function LoginPage() {
 					Login
 				</button>
 			</form>
-
 			<hr />
-
-			{/* Google Login Button */}
 			<div id="buttonDiv" className="my-3" />
 		</div>
 	);
