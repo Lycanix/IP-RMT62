@@ -18,7 +18,7 @@ export default function ProfilePage() {
 		const fetchProfile = async () => {
 			try {
 				const { data } = await axios.get(
-					`${import.meta.env.VITE_API_BASE_URL}/profile`,
+					`${import.meta.env.VITE_API_BASE_URL}/google-login/profile`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
