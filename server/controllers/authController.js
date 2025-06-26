@@ -8,11 +8,22 @@ const bcrypt = require("bcryptjs");
 module.exports = {
 	async register(req, res, next) {
 		try {
-			const { email, password } = req.body;
+			const { name, email, password } = req.body;
+			if (!name || !email || !password) {
+				return res
+					.status(400)
+					.json({ error: "Name, email, and password are required" });
+			}
 			const hashed = await hashPassword(password);
-			const user = await User.create({ email, password: hashed });
+			const user = await User.create({ name, email, password: hashed });
 			res.status(201).json({ id: user.id, email: user.email });
 		} catch (err) {
+			if (err.name === "SequelizeUniqueConstraintError") {
+				return res.status(400).json({ error: "Email already used" });
+			}
+			if (err.name === "SequelizeValidationError") {
+				return res.status(400).json({ error: err.errors[0].message });
+			}
 			next(err);
 		}
 	},
@@ -20,8 +31,16 @@ module.exports = {
 	async login(req, res, next) {
 		try {
 			const { email, password } = req.body;
+			if (!email || !password) {
+				return res
+					.status(400)
+					.json({ error: "Email and password are required" });
+			}
 			const user = await User.findOne({ where: { email } });
-			if (!user || !(await comparePassword(password, user.password))) {
+			if (!user || !user.password) {
+				return res.status(401).json({ error: "Invalid credentials" });
+			}
+			if (!(await comparePassword(password, user.password))) {
 				return res.status(401).json({ error: "Invalid credentials" });
 			}
 			const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
@@ -47,9 +66,12 @@ module.exports = {
 			// Cari atau buat user di database
 			let user = await User.findOne({ where: { email } });
 			if (!user) {
+				const randomPassword = await hashPassword(
+					Math.random().toString(36).slice(-8)
+				); // <-- perbaikan di sini
 				user = await User.create({
 					email,
-					password: "", // atau random string, karena login via Google
+					password: randomPassword, // <-- gunakan hash random, bukan ""
 					name: payload.name || "",
 				});
 			}

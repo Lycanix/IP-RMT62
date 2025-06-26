@@ -1,12 +1,11 @@
 const bcrypt = require("bcryptjs");
 
-async function hashPassword(password) {
-	const saltRounds = 10;
-	return await bcrypt.hash(password, saltRounds);
+function hashPassword(password) {
+	return bcrypt.hash(password, 10);
 }
 
-async function comparePassword(plainPassword, hashedPassword) {
-	return await bcrypt.compare(plainPassword, hashedPassword);
+function comparePassword(password, hash) {
+	return bcrypt.compare(password, hash);
 }
 
 module.exports = { hashPassword, comparePassword };

@@ -1,38 +1,66 @@
-require("dotenv").config({ path: ".env.test" });
-const express = require("express");
-const router = express.Router();
-const { OAuth2Client } = require("google-auth-library");
-const jwt = require("jsonwebtoken");
-const { User } = require("../models");
+const { MyDigimon, User, sequelize } = require("../models");
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+describe("Simple MyDigimon Model CRUD", () => {
+	let user;
 
-router.post("/", async (req, res) => {
-	try {
-		const { idToken } = req.body;
-		const ticket = await client.verifyIdToken({
-			idToken,
-			audience: process.env.GOOGLE_CLIENT_ID,
+	beforeAll(async () => {
+		await sequelize.sync({ force: true });
+		user = await User.create({
+			name: "Test User",
+			email: "simple@mail.com",
+			password: "test123",
 		});
-		const payload = ticket.getPayload();
+	});
 
-		const [user] = await User.findOrCreate({
-			where: { email: payload.email },
-			defaults: { name: payload.name },
+	it("can create MyDigimon", async () => {
+		const digimon = await MyDigimon.create({
+			digimonName: "Agumon",
+			img: "https://digimon.shadowsmith.com/img/agumon.jpg",
+			level: "Rookie",
+			attribute: "Vaccine",
+			userId: user.id,
 		});
+		expect(digimon.id).toBeDefined();
+		expect(digimon.digimonName).toBe("Agumon");
+	});
 
-		const token = jwt.sign(
-			{ id: user.id, email: user.email },
-			process.env.JWT_SECRET
-		);
-
-		res.json({ access_token: token, name: user.name });
-	} catch (err) {
-		res.status(401).json({
-			error: "Invalid Google Login",
-			message: err.message,
+	it("can find MyDigimon by PK", async () => {
+		const digimon = await MyDigimon.create({
+			digimonName: "Gabumon",
+			img: "https://digimon.shadowsmith.com/img/gabumon.jpg",
+			level: "Rookie",
+			attribute: "Data",
+			userId: user.id,
 		});
-	}
+		const found = await MyDigimon.findByPk(digimon.id);
+		expect(found).not.toBeNull();
+		expect(found.digimonName).toBe("Gabumon");
+	});
+
+	it("can update MyDigimon", async () => {
+		const digimon = await MyDigimon.create({
+			digimonName: "Patamon",
+			img: "https://digimon.shadowsmith.com/img/patamon.jpg",
+			level: "Rookie",
+			attribute: "Data",
+			userId: user.id,
+		});
+		await digimon.update({ level: "Champion" });
+		const updated = await MyDigimon.findByPk(digimon.id);
+		expect(updated.level).toBe("Champion");
+	});
+
+	it("can delete MyDigimon", async () => {
+		const digimon = await MyDigimon.create({
+			digimonName: "Biyomon",
+			img: "https://digimon.shadowsmith.com/img/biyomon.jpg",
+			level: "Rookie",
+			attribute: "Vaccine",
+			userId: user.id,
+		});
+		const id = digimon.id;
+		await digimon.destroy();
+		const deleted = await MyDigimon.findByPk(id);
+		expect(deleted).toBeNull();
+	});
 });
-
-module.exports = router;
