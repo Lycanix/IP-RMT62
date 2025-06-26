@@ -1,6 +1,23 @@
+const axios = require("axios");
 const { MyDigimon } = require("../models");
 const { mapLevelToAttribute } = require("../helpers/mapLevelToAttribute");
 const { getGeminiRecommendation } = require("../helpers/gemini.helper");
+
+exports.getMarketDigimons = async (req, res, next) => {
+	try {
+		const { data } = await axios.get(
+			"https://digimon-api.vercel.app/api/digimon"
+		);
+		const digimons = data.map((d) => ({
+			name: d.name,
+			img: d.img,
+			level: d.level,
+		}));
+		res.json(digimons);
+	} catch (err) {
+		next(err);
+	}
+};
 
 exports.buyDigimon = async (req, res, next) => {
 	try {
