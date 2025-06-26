@@ -1,57 +1,67 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMarketDigimons } from "../store/marketSlice";
+import { buyDigimon } from "../store/myDigimonSlice";
 
-export default function ProfilePage() {
-	const navigate = useNavigate();
-	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+export default function MarketPage() {
+	const dispatch = useDispatch();
+	const { digimons, loading, error } = useSelector((state) => state.market);
 
 	useEffect(() => {
+		dispatch(fetchMarketDigimons());
+	}, [dispatch]);
+
+	const handleBuy = (digimon) => {
+		dispatch(
+			buyDigimon({
+				digimonName: digimon.name,
+				img: digimon.img,
+				level: digimon.level,
+			})
+		);
+	};
+
+	const getRecommendation = async () => {
 		const token = localStorage.getItem("access_token");
-		if (!token) {
-			navigate("/login");
-			return;
-		}
+		const res = await fetch("http://localhost:3000/market/recommendation", {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		const data = await res.json();
+		alert(data.recommendation);
+	};
 
-		const fetchProfile = async () => {
-			try {
-				const { data } = await axios.get(
-					`${import.meta.env.VITE_API_BASE_URL}/profile`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-				setUser(data);
-			} catch (err) {
-				setError("Failed to fetch profile");
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchProfile();
-	}, [navigate]);
-
-	if (loading) return <p>Loading profile...</p>;
-	if (error) return <p>{error}</p>;
+	if (loading) return <p>Loading market...</p>;
+	if (error) return <p>Error loading Digimon: {error}</p>;
 
 	return (
-		<>
-			<div className="container mt-5">
-				<h2>👤 User Profile</h2>
-				<div className="card p-3 mt-3">
-					<p>
-						<strong>Name:</strong> {user?.name || "Unknown User"}
-					</p>
-					<p>
-						<strong>Email:</strong> {user?.email || "unknown@email.com"}
-					</p>
-				</div>
+		<div className="container mt-4">
+			<h2>🛒 Digimon Market</h2>
+			<button className="btn btn-primary btn-sm" onClick={getRecommendation}>
+				Get Recommendation
+			</button>
+			<div className="row">
+				{digimons.map((digimon, i) => (
+					<div className="col-md-3" key={i}>
+						<div className="card mb-3 shadow">
+							<img
+								src={digimon.img}
+								alt={digimon.name}
+								className="card-img-top"
+							/>
+							<div className="card-body">
+								<h5>{digimon.name}</h5>
+								<p>Level: {digimon.level}</p>
+								<button
+									className="btn btn-primary btn-sm"
+									onClick={() => handleBuy(digimon)}
+								>
+									Buy
+								</button>
+							</div>
+						</div>
+					</div>
+				))}
 			</div>
-		</>
+		</div>
 	);
 }
