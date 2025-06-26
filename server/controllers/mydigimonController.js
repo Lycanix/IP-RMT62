@@ -8,6 +8,17 @@ module.exports = {
 			const digimons = await MyDigimon.findAll({
 				where: { userId: req.user.id },
 				order: [["id", "ASC"]],
+				attributes: [
+					"id",
+					"digimonName",
+					"img",
+					"level",
+					"attribute",
+					"power",
+					"hunger",
+					"happiness",
+					"userId",
+				],
 			});
 			res.json(digimons);
 		} catch (err) {

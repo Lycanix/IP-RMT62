@@ -4,10 +4,7 @@ const { getGeminiRecommendation } = require("../helpers/gemini.helper");
 
 exports.buyDigimon = async (req, res, next) => {
 	try {
-		// Support flexible field names from client (name/img/image/digimonName)
-		const digimonName = req.body.digimonName || req.body.name;
-		const img = req.body.img || req.body.image;
-		const level = req.body.level;
+		const { digimonName, img, level } = req.body;
 
 		if (!digimonName || !img || !level) {
 			return res

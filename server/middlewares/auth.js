@@ -20,7 +20,7 @@ module.exports = async function (req, res, next) {
 				.json({ error: "Unauthorized", message: "User not found" });
 		}
 
-		req.user = { id: user.id, email: user.email };
+		req.user = { id: user.id, email: user.email, name: user.name };
 		next();
 	} catch (err) {
 		res.status(401).json({ error: "Unauthorized", message: err.message });
